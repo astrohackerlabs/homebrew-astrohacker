@@ -90,6 +90,107 @@ cask "astrohacker-terminal" do
     system_command "codesign",
                    args: ["--force", "--deep", "--sign", "-",
                           app_path]
+
+    warmup_log = "#{HOMEBREW_PREFIX}/var/log/astrohacker/terminal-postflight-warmup.log"
+    system_command "mkdir", args: ["-p", File.dirname(warmup_log)]
+
+    warmup_engine = lambda do |engine, binary, args = [], extra_env = {}|
+      timeout_seconds = 180
+      start_mono = Process.clock_gettime(Process::CLOCK_MONOTONIC, :millisecond)
+      start_wall = (Time.now.to_f * 1000).to_i
+
+      ohai "Warming up Astrohacker Terminal #{engine}. First browser launch may be slow without this step."
+
+      File.open(warmup_log, "a") do |log|
+        log.puts("AstrohackerTerminalPostflightWarmup event=start engine=#{engine} " \
+                 "wall_ms=#{start_wall} binary=#{binary} args=#{args.join(" ")}")
+      end
+
+      env = {
+        "TERMSURF_ENGINE_STARTUP_TRACE" => "1",
+        "TERMSURF_ENGINE_STARTUP_TRACE_FILE" => warmup_log,
+      }.merge(extra_env)
+
+      status = nil
+      timed_out = false
+      pid = nil
+
+      begin
+        File.open(warmup_log, "a") do |child_log|
+          child_log.sync = true
+          pid = Process.spawn(env, binary, *args, "--termsurf-warmup",
+                              out: child_log, err: child_log)
+        end
+
+        deadline = Time.now + timeout_seconds
+        loop do
+          waited = Process.waitpid2(pid, Process::WNOHANG)
+          if waited
+            status = waited[1]
+            break
+          end
+          if Time.now >= deadline
+            timed_out = true
+            begin
+              Process.kill("TERM", pid)
+            rescue Errno::ESRCH
+            end
+            sleep 1
+            begin
+              Process.kill("KILL", pid)
+            rescue Errno::ESRCH
+            end
+            begin
+              Process.wait(pid)
+            rescue Errno::ECHILD
+            end
+            break
+          end
+          sleep 0.25
+        end
+      rescue SystemCallError => e
+        File.open(warmup_log, "a") do |log|
+          log.puts("AstrohackerTerminalPostflightWarmup event=spawn_error engine=#{engine} " \
+                   "wall_ms=#{(Time.now.to_f * 1000).to_i} error=#{e.class} message=#{e.message.inspect}")
+        end
+      end
+
+      duration_ms = Process.clock_gettime(Process::CLOCK_MONOTONIC, :millisecond) - start_mono
+      success = status&.success? == true && !timed_out
+      exit_status = if status
+        status.exitstatus
+      else
+        "unknown"
+      end
+
+      File.open(warmup_log, "a") do |log|
+        log.puts("AstrohackerTerminalPostflightWarmup event=done engine=#{engine} " \
+                 "wall_ms=#{(Time.now.to_f * 1000).to_i} " \
+                 "duration_ms=#{duration_ms} success=#{success} " \
+                 "timed_out=#{timed_out} exit_status=#{exit_status}")
+      end
+
+      unless success
+        opoo "Astrohacker Terminal #{engine} postflight warmup failed or timed out; " \
+             "first browser launch may be slower. See #{warmup_log}."
+      end
+    end
+
+    if ENV["ASTROHACKER_TERMINAL_SKIP_POSTFLIGHT_WARMUP"] == "1" ||
+       ENV["HOMEBREW_TERMSURF_SKIP_POSTFLIGHT_WARMUP"] == "1"
+      File.open(warmup_log, "a") do |log|
+        log.puts("AstrohackerTerminalPostflightWarmup event=skipped " \
+                 "wall_ms=#{(Time.now.to_f * 1000).to_i} " \
+                 "reason=skip_env")
+      end
+    else
+      warmup_engine.call("chromium", "#{chromiumd_dir}/ah-chromiumd",
+                         ["--browser-name=chromium"])
+      warmup_engine.call("webkit", "#{webkitd_dir}/ah-webkitd",
+                         ["--browser-name=webkit"],
+                         { "DYLD_FRAMEWORK_PATH" => webkitd_dir })
+      warmup_engine.call("ladybird", "#{ladybirdd_dir}/bin/ah-ladybirdd")
+    end
   end
 
   uninstall quit:   "com.astrohacker.terminal",
