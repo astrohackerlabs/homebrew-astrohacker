@@ -176,7 +176,8 @@ cask "astrohacker-terminal" do
       end
     end
 
-    if ENV["ASTROHACKER_TERMINAL_SKIP_POSTFLIGHT_WARMUP"] == "1" ||
+    if ENV["HOMEBREW_ASTROHACKER_TERMINAL_SKIP_POSTFLIGHT_WARMUP"] == "1" ||
+       ENV["ASTROHACKER_TERMINAL_SKIP_POSTFLIGHT_WARMUP"] == "1" ||
        ENV["HOMEBREW_TERMSURF_SKIP_POSTFLIGHT_WARMUP"] == "1"
       File.open(warmup_log, "a") do |log|
         log.puts("AstrohackerTerminalPostflightWarmup event=skipped " \
