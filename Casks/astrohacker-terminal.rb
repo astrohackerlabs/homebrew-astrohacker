@@ -1,6 +1,6 @@
 cask "astrohacker-terminal" do
-  version "0.1.1"
-  sha256 "39ff3ddf1a68ba136b570f0c30ae5ca378127a8ba18c5fd4935eccc3c0fb4d9c"
+  version "0.1.2"
+  sha256 "9633ba569738d1edbee189fbdb690d7f1245892f41a3153720400ebe5384c821"
 
   url "https://github.com/astrohackerlabs/astrohacker-terminal/releases/download/v#{version}/astrohacker-terminal-#{version}-aarch64-apple-darwin.tar.gz",
       verified: "github.com/astrohackerlabs/astrohacker-terminal/"
@@ -14,22 +14,22 @@ cask "astrohacker-terminal" do
   app "Astrohacker Terminal.app"
   binary "web"
   binary "termsurf"
-  binary "roamium/roamium", target: "roamium"
-  binary "surfari/surfari", target: "surfari"
-  binary "girlbat/bin/girlbat", target: "girlbat"
-  artifact "roamium", target: "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-roamium"
-  artifact "surfari", target: "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-surfari"
-  artifact "girlbat", target: "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-girlbat"
+  binary "ah-chromiumd/ah-chromiumd", target: "ah-chromiumd"
+  binary "ah-webkitd/ah-webkitd", target: "ah-webkitd"
+  binary "ah-ladybirdd/bin/ah-ladybirdd", target: "ah-ladybirdd"
+  artifact "ah-chromiumd", target: "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-ah-chromiumd"
+  artifact "ah-webkitd", target: "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-ah-webkitd"
+  artifact "ah-ladybirdd", target: "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-ah-ladybirdd"
   artifact "gtui", target: "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-gtui"
 
   postflight do
     app_path = "#{appdir}/Astrohacker Terminal.app"
-    roamium_dir = "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-roamium"
-    surfari_dir = "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-surfari"
-    girlbat_dir = "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-girlbat"
+    chromiumd_dir = "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-ah-chromiumd"
+    webkitd_dir = "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-ah-webkitd"
+    ladybirdd_dir = "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-ah-ladybirdd"
     gtui_dir = "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-gtui"
     surfari_runtime_artifacts = [
-      "surfari",
+      "ah-webkitd",
       "libtermsurf_webkit.dylib",
       "WebKit.framework",
       "WebCore.framework",
@@ -49,7 +49,7 @@ cask "astrohacker-terminal" do
       "com.apple.WebKit.WebContent.xpc",
     ]
     girlbat_executable_artifacts = [
-      "bin/girlbat",
+      "bin/ah-ladybirdd",
       "bin/ImageDecoder",
       "bin/RequestServer",
       "bin/WebContent",
@@ -63,26 +63,26 @@ cask "astrohacker-terminal" do
     end
 
     clear_xattrs.call(app_path)
-    clear_xattrs.call(roamium_dir)
+    clear_xattrs.call(chromiumd_dir)
     clear_xattrs.call(gtui_dir)
-    clear_xattrs.call(girlbat_dir)
+    clear_xattrs.call(ladybirdd_dir)
     surfari_runtime_artifacts.each do |artifact|
-      clear_xattrs.call("#{surfari_dir}/#{artifact}")
+      clear_xattrs.call("#{webkitd_dir}/#{artifact}")
     end
     clear_xattrs.call(staged_path/"web")
     clear_xattrs.call(staged_path/"termsurf")
 
     system_command "codesign", args: ["--force", "--sign", "-", staged_path/"web"]
     system_command "codesign", args: ["--force", "--sign", "-", staged_path/"termsurf"]
-    system_command "codesign", args: ["--force", "--sign", "-", "#{roamium_dir}/roamium"]
+    system_command "codesign", args: ["--force", "--sign", "-", "#{chromiumd_dir}/ah-chromiumd"]
     surfari_runtime_artifacts.each do |artifact|
-      system_command "codesign", args: ["--force", "--deep", "--sign", "-", "#{surfari_dir}/#{artifact}"]
+      system_command "codesign", args: ["--force", "--deep", "--sign", "-", "#{webkitd_dir}/#{artifact}"]
     end
-    Dir["#{girlbat_dir}/lib/*.dylib"].each do |dylib|
+    Dir["#{ladybirdd_dir}/lib/*.dylib"].each do |dylib|
       system_command "codesign", args: ["--force", "--sign", "-", dylib]
     end
     girlbat_executable_artifacts.each do |artifact|
-      path = "#{girlbat_dir}/#{artifact}"
+      path = "#{ladybirdd_dir}/#{artifact}"
       next unless File.exist?(path)
 
       system_command "codesign", args: ["--force", "--deep", "--sign", "-", path]
@@ -94,6 +94,9 @@ cask "astrohacker-terminal" do
 
   uninstall quit:   "com.termsurf",
             delete: [
+              "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-ah-chromiumd",
+              "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-ah-ladybirdd",
+              "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-ah-webkitd",
               "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-girlbat",
               "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-gtui",
               "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-roamium",
