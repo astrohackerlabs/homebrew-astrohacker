@@ -1,6 +1,6 @@
 cask "astrohacker-terminal" do
-  version "0.1.3"
-  sha256 "220e30717ae84618b3f1ad96f76da1ac232417684bb6ee9301e9cae6ae638338"
+  version "0.1.4"
+  sha256 "37167814ff9a265705f558c3a6615e675aad050a7e0b6e0c25a1faf114481470"
 
   url "https://github.com/astrohackerlabs/astrohacker-terminal/releases/download/v#{version}/astrohacker-terminal-#{version}-aarch64-apple-darwin.tar.gz",
       verified: "github.com/astrohackerlabs/astrohacker-terminal/"
@@ -104,6 +104,9 @@ cask "astrohacker-terminal" do
             ]
 
   zap trash: [
+    "~/.config/astrohacker",
+    "~/.local/share/astrohacker",
+    "~/.local/state/astrohacker",
     "~/.config/termsurf",
     "~/.local/share/termsurf",
     "~/.local/state/termsurf",
