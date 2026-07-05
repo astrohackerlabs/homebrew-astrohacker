@@ -105,10 +105,10 @@ cask "astrohacker-terminal" do
 
   zap trash: [
     "~/.config/astrohacker",
-    "~/.local/share/astrohacker",
-    "~/.local/state/astrohacker",
     "~/.config/termsurf",
+    "~/.local/share/astrohacker",
     "~/.local/share/termsurf",
+    "~/.local/state/astrohacker",
     "~/.local/state/termsurf",
   ]
 end
