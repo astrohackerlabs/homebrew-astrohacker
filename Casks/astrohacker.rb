@@ -1,8 +1,8 @@
-cask "astrohacker-terminal" do
+cask "astrohacker" do
   version "0.1.6"
   sha256 "46a6aa441d28cbb7f6ee0a46a76f081e3eb9bd4bf7578c036f8e66bbda69bc0f"
 
-  url "https://github.com/astrohackerlabs/astrohacker-terminal/releases/download/v#{version}/astrohacker-terminal-#{version}-aarch64-apple-darwin.tar.gz",
+  url "https://github.com/astrohackerlabs/astrohacker-terminal/releases/download/v#{version}/astrohacker-#{version}-aarch64-apple-darwin.tar.gz",
       verified: "github.com/astrohackerlabs/astrohacker-terminal/"
   name "Astrohacker Terminal"
   desc "Terminal with embedded GPU-accelerated browser panes"
