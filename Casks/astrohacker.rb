@@ -4,8 +4,8 @@ cask "astrohacker" do
 
   url "https://github.com/astrohackerlabs/astrohacker-terminal/releases/download/v#{version}/astrohacker-#{version}-aarch64-apple-darwin.tar.gz",
       verified: "github.com/astrohackerlabs/astrohacker-terminal/"
-  name "Astrohacker Terminal"
-  desc "Terminal with embedded GPU-accelerated browser panes"
+  name "Astrohacker"
+  desc "Terminal, shell, and editor tools"
   homepage "https://astrohacker.com/"
 
   depends_on arch: :arm64
@@ -15,12 +15,14 @@ cask "astrohacker" do
   binary "web"
   binary "termsurf"
   binary "ahsh"
+  binary "ahe"
   binary "ah-chromiumd/ah-chromiumd", target: "ah-chromiumd"
   binary "ah-webkitd/ah-webkitd", target: "ah-webkitd"
   binary "ah-ladybirdd/bin/ah-ladybirdd", target: "ah-ladybirdd"
   artifact "ah-chromiumd", target: "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-ah-chromiumd"
   artifact "ah-webkitd", target: "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-ah-webkitd"
   artifact "ah-ladybirdd", target: "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-ah-ladybirdd"
+  artifact "ahe-runtime", target: "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-editor"
   artifact "gtui", target: "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-gtui"
 
   postflight do
@@ -28,6 +30,7 @@ cask "astrohacker" do
     chromiumd_dir = "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-ah-chromiumd"
     webkitd_dir = "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-ah-webkitd"
     ladybirdd_dir = "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-ah-ladybirdd"
+    editor_runtime_dir = "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-editor/runtime"
     gtui_dir = "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-gtui"
     surfari_runtime_artifacts = [
       "ah-webkitd",
@@ -67,22 +70,28 @@ cask "astrohacker" do
     clear_xattrs.call(chromiumd_dir)
     clear_xattrs.call(gtui_dir)
     clear_xattrs.call(ladybirdd_dir)
+    clear_xattrs.call(editor_runtime_dir)
     surfari_runtime_artifacts.each do |artifact|
       clear_xattrs.call("#{webkitd_dir}/#{artifact}")
     end
     clear_xattrs.call(staged_path/"web")
     clear_xattrs.call(staged_path/"termsurf")
     clear_xattrs.call(staged_path/"ahsh")
+    clear_xattrs.call(staged_path/"ahe")
 
     system_command "codesign", args: ["--force", "--sign", "-", staged_path/"web"]
     system_command "codesign", args: ["--force", "--sign", "-", staged_path/"termsurf"]
     system_command "codesign", args: ["--force", "--sign", "-", staged_path/"ahsh"]
+    system_command "codesign", args: ["--force", "--sign", "-", staged_path/"ahe"]
     system_command "codesign", args: ["--force", "--sign", "-", "#{chromiumd_dir}/ah-chromiumd"]
     surfari_runtime_artifacts.each do |artifact|
       system_command "codesign", args: ["--force", "--deep", "--sign", "-", "#{webkitd_dir}/#{artifact}"]
     end
     Dir["#{ladybirdd_dir}/lib/*.dylib"].each do |dylib|
       system_command "codesign", args: ["--force", "--sign", "-", dylib]
+    end
+    Dir["#{editor_runtime_dir}/grammars/*.{so,dylib}"].each do |grammar|
+      system_command "codesign", args: ["--force", "--sign", "-", grammar]
     end
     girlbat_executable_artifacts.each do |artifact|
       path = "#{ladybirdd_dir}/#{artifact}"
@@ -204,8 +213,11 @@ cask "astrohacker" do
 
   zap trash: [
     "~/.cache/astrohacker/terminal",
+    "~/.cache/astrohacker/editor",
+    "~/.config/astrohacker/editor",
     "~/.config/astrohacker/terminal",
     "~/.config/termsurf",
+    "~/.local/share/astrohacker/editor",
     "~/.local/share/astrohacker/terminal",
     "~/.local/share/termsurf",
     "~/.local/state/astrohacker/terminal",
