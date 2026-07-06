@@ -107,7 +107,7 @@ cask "astrohacker" do
       end
 
       env = {
-        "TERMSURF_ENGINE_STARTUP_TRACE" => "1",
+        "TERMSURF_ENGINE_STARTUP_TRACE"      => "1",
         "TERMSURF_ENGINE_STARTUP_TRACE_FILE" => warmup_log,
       }.merge(extra_env)
 
@@ -134,15 +134,18 @@ cask "astrohacker" do
             begin
               Process.kill("TERM", pid)
             rescue Errno::ESRCH
+              timed_out = true
             end
             sleep 1
             begin
               Process.kill("KILL", pid)
             rescue Errno::ESRCH
+              timed_out = true
             end
             begin
               Process.wait(pid)
             rescue Errno::ECHILD
+              timed_out = true
             end
             break
           end
