@@ -209,11 +209,12 @@ cask "astrohacker" do
             ]
 
   zap trash: [
-    "~/.config/astrohacker",
+    "~/.cache/astrohacker/terminal",
+    "~/.config/astrohacker/terminal",
     "~/.config/termsurf",
-    "~/.local/share/astrohacker",
+    "~/.local/share/astrohacker/terminal",
     "~/.local/share/termsurf",
-    "~/.local/state/astrohacker",
+    "~/.local/state/astrohacker/terminal",
     "~/.local/state/termsurf",
     "~/Library/Application Support/com.astrohacker.terminal",
     "~/Library/Application Support/com.astrohacker.terminal.debug",
