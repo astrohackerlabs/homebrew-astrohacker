@@ -1,6 +1,6 @@
 cask "astrohacker" do
-  version "0.1.9"
-  sha256 "eb828cb1ac4a3f985a03a40393598e28e86a9bb02d316fd652a38f03c58fceb2"
+  version "0.1.10"
+  sha256 "e971b02fdf3a1b0edc279000008b33dfd8cae33961465ae500824e962d8ef258"
 
   url "https://github.com/astrohackerlabs/astrohacker-terminal/releases/download/v#{version}/astrohacker-#{version}-aarch64-apple-darwin.tar.gz",
       verified: "github.com/astrohackerlabs/astrohacker-terminal/"
@@ -197,16 +197,7 @@ cask "astrohacker" do
     end
   end
 
-  uninstall quit:   "com.astrohacker.terminal",
-            delete: [
-              "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-ah-chromiumd",
-              "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-ah-ladybirdd",
-              "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-ah-webkitd",
-              "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-girlbat",
-              "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-gtui",
-              "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-roamium",
-              "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-surfari",
-            ]
+  uninstall quit: "com.astrohacker.terminal"
 
   zap trash: [
     "~/.cache/astrohacker/terminal",
