@@ -212,8 +212,8 @@ cask "astrohacker" do
   uninstall quit: "com.astrohacker.terminal"
 
   zap trash: [
-    "~/.cache/astrohacker/terminal",
     "~/.cache/astrohacker/editor",
+    "~/.cache/astrohacker/terminal",
     "~/.config/astrohacker/editor",
     "~/.config/astrohacker/terminal",
     "~/.config/termsurf",
