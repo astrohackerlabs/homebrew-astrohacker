@@ -14,6 +14,7 @@ cask "astrohacker" do
   app "Astrohacker Terminal.app"
   binary "web"
   binary "termsurf"
+  binary "ahsh"
   binary "ah-chromiumd/ah-chromiumd", target: "ah-chromiumd"
   binary "ah-webkitd/ah-webkitd", target: "ah-webkitd"
   binary "ah-ladybirdd/bin/ah-ladybirdd", target: "ah-ladybirdd"
@@ -71,9 +72,11 @@ cask "astrohacker" do
     end
     clear_xattrs.call(staged_path/"web")
     clear_xattrs.call(staged_path/"termsurf")
+    clear_xattrs.call(staged_path/"ahsh")
 
     system_command "codesign", args: ["--force", "--sign", "-", staged_path/"web"]
     system_command "codesign", args: ["--force", "--sign", "-", staged_path/"termsurf"]
+    system_command "codesign", args: ["--force", "--sign", "-", staged_path/"ahsh"]
     system_command "codesign", args: ["--force", "--sign", "-", "#{chromiumd_dir}/ah-chromiumd"]
     surfari_runtime_artifacts.each do |artifact|
       system_command "codesign", args: ["--force", "--deep", "--sign", "-", "#{webkitd_dir}/#{artifact}"]
