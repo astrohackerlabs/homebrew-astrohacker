@@ -32,7 +32,7 @@ cask "astrohacker" do
     ladybirdd_dir = "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-ah-ladybirdd"
     editor_runtime_dir = "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-editor/runtime"
     gtui_dir = "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-gtui"
-    surfari_runtime_artifacts = [
+    webkit_runtime_artifacts = [
       "ah-webkitd",
       "libtermsurf_webkit.dylib",
       "WebKit.framework",
@@ -52,7 +52,7 @@ cask "astrohacker" do
       "com.apple.WebKit.WebContent.EnhancedSecurity.xpc",
       "com.apple.WebKit.WebContent.xpc",
     ]
-    girlbat_executable_artifacts = [
+    ladybird_executable_artifacts = [
       "bin/ah-ladybirdd",
       "bin/ImageDecoder",
       "bin/RequestServer",
@@ -71,7 +71,7 @@ cask "astrohacker" do
     clear_xattrs.call(gtui_dir)
     clear_xattrs.call(ladybirdd_dir)
     clear_xattrs.call(editor_runtime_dir)
-    surfari_runtime_artifacts.each do |artifact|
+    webkit_runtime_artifacts.each do |artifact|
       clear_xattrs.call("#{webkitd_dir}/#{artifact}")
     end
     clear_xattrs.call(staged_path/"web")
@@ -84,7 +84,7 @@ cask "astrohacker" do
     system_command "codesign", args: ["--force", "--sign", "-", staged_path/"ahsh"]
     system_command "codesign", args: ["--force", "--sign", "-", staged_path/"ahe"]
     system_command "codesign", args: ["--force", "--sign", "-", "#{chromiumd_dir}/ah-chromiumd"]
-    surfari_runtime_artifacts.each do |artifact|
+    webkit_runtime_artifacts.each do |artifact|
       system_command "codesign", args: ["--force", "--deep", "--sign", "-", "#{webkitd_dir}/#{artifact}"]
     end
     Dir["#{ladybirdd_dir}/lib/*.dylib"].each do |dylib|
@@ -93,7 +93,7 @@ cask "astrohacker" do
     Dir["#{editor_runtime_dir}/grammars/*.{so,dylib}"].each do |grammar|
       system_command "codesign", args: ["--force", "--sign", "-", grammar]
     end
-    girlbat_executable_artifacts.each do |artifact|
+    ladybird_executable_artifacts.each do |artifact|
       path = "#{ladybirdd_dir}/#{artifact}"
       next unless File.exist?(path)
 
