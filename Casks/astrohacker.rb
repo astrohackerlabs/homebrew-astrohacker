@@ -12,17 +12,18 @@ cask "astrohacker" do
   depends_on macos: :ventura
 
   app "Astrohacker Terminal.app"
-  binary "web"
-  binary "termsurf"
+  binary "Astrohacker Terminal.app/Contents/MacOS/ahterm", target: "ahterm"
+  binary "ahweb"
+  binary "ahapp"
   binary "ahsh"
-  binary "ahe"
+  binary "ahed"
   binary "ah-chromiumd/ah-chromiumd", target: "ah-chromiumd"
   binary "ah-webkitd/ah-webkitd", target: "ah-webkitd"
   binary "ah-ladybirdd/bin/ah-ladybirdd", target: "ah-ladybirdd"
   artifact "ah-chromiumd", target: "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-ah-chromiumd"
   artifact "ah-webkitd", target: "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-ah-webkitd"
   artifact "ah-ladybirdd", target: "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-ah-ladybirdd"
-  artifact "ahe-runtime", target: "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-editor"
+  artifact "ahed-runtime", target: "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-editor"
   artifact "gtui", target: "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-gtui"
 
   postflight do
@@ -74,15 +75,15 @@ cask "astrohacker" do
     webkit_runtime_artifacts.each do |artifact|
       clear_xattrs.call("#{webkitd_dir}/#{artifact}")
     end
-    clear_xattrs.call(staged_path/"web")
-    clear_xattrs.call(staged_path/"termsurf")
+    clear_xattrs.call(staged_path/"ahweb")
+    clear_xattrs.call(staged_path/"ahapp")
     clear_xattrs.call(staged_path/"ahsh")
-    clear_xattrs.call(staged_path/"ahe")
+    clear_xattrs.call(staged_path/"ahed")
 
-    system_command "codesign", args: ["--force", "--sign", "-", staged_path/"web"]
-    system_command "codesign", args: ["--force", "--sign", "-", staged_path/"termsurf"]
+    system_command "codesign", args: ["--force", "--sign", "-", staged_path/"ahweb"]
+    system_command "codesign", args: ["--force", "--sign", "-", staged_path/"ahapp"]
     system_command "codesign", args: ["--force", "--sign", "-", staged_path/"ahsh"]
-    system_command "codesign", args: ["--force", "--sign", "-", staged_path/"ahe"]
+    system_command "codesign", args: ["--force", "--sign", "-", staged_path/"ahed"]
     system_command "codesign", args: ["--force", "--sign", "-", "#{chromiumd_dir}/ah-chromiumd"]
     webkit_runtime_artifacts.each do |artifact|
       system_command "codesign", args: ["--force", "--deep", "--sign", "-", "#{webkitd_dir}/#{artifact}"]
