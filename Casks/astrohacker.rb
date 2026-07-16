@@ -31,7 +31,8 @@ cask "astrohacker" do
     chromiumd_dir = "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-ah-chromiumd"
     webkitd_dir = "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-ah-webkitd"
     ladybirdd_dir = "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-ah-ladybirdd"
-    editor_runtime_dir = "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-editor/runtime"
+    editor_dir = "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-editor"
+    editor_runtime_dir = "#{editor_dir}/runtime"
     gtui_dir = "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-gtui"
     webkit_runtime_artifacts = [
       "ah-webkitd",
@@ -69,12 +70,10 @@ cask "astrohacker" do
 
     clear_xattrs.call(app_path)
     clear_xattrs.call(chromiumd_dir)
+    clear_xattrs.call(webkitd_dir)
     clear_xattrs.call(gtui_dir)
     clear_xattrs.call(ladybirdd_dir)
-    clear_xattrs.call(editor_runtime_dir)
-    webkit_runtime_artifacts.each do |artifact|
-      clear_xattrs.call("#{webkitd_dir}/#{artifact}")
-    end
+    clear_xattrs.call(editor_dir)
     clear_xattrs.call(staged_path/"ahweb")
     clear_xattrs.call(staged_path/"ahapp")
     clear_xattrs.call(staged_path/"ahsh")
