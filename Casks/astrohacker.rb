@@ -5,7 +5,7 @@ cask "astrohacker" do
   url "https://github.com/astrohackerlabs/astrohacker-terminal/releases/download/v#{version}/astrohacker-#{version}-aarch64-apple-darwin.tar.gz",
       verified: "github.com/astrohackerlabs/astrohacker-terminal/"
   name "Astrohacker"
-  desc "Terminal, shell, and editor tools"
+  desc "Terminal, shell, and web tools"
   homepage "https://astrohacker.com/"
 
   depends_on arch: :arm64
@@ -16,14 +16,12 @@ cask "astrohacker" do
   binary "ahweb"
   binary "ahapp"
   binary "ahsh"
-  binary "ahed"
   binary "ah-chromiumd/ah-chromiumd", target: "ah-chromiumd"
   binary "ah-webkitd/ah-webkitd", target: "ah-webkitd"
   binary "ah-ladybirdd/bin/ah-ladybirdd", target: "ah-ladybirdd"
   artifact "ah-chromiumd", target: "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-ah-chromiumd"
   artifact "ah-webkitd", target: "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-ah-webkitd"
   artifact "ah-ladybirdd", target: "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-ah-ladybirdd"
-  artifact "ahed-runtime", target: "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-editor"
   artifact "gtui", target: "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-gtui"
 
   postflight do
@@ -31,8 +29,6 @@ cask "astrohacker" do
     chromiumd_dir = "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-ah-chromiumd"
     webkitd_dir = "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-ah-webkitd"
     ladybirdd_dir = "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-ah-ladybirdd"
-    editor_dir = "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-editor"
-    editor_runtime_dir = "#{editor_dir}/runtime"
     gtui_dir = "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-gtui"
     webkit_runtime_artifacts = [
       "ah-webkitd",
@@ -73,25 +69,19 @@ cask "astrohacker" do
     clear_xattrs.call(webkitd_dir)
     clear_xattrs.call(gtui_dir)
     clear_xattrs.call(ladybirdd_dir)
-    clear_xattrs.call(editor_dir)
     clear_xattrs.call(staged_path/"ahweb")
     clear_xattrs.call(staged_path/"ahapp")
     clear_xattrs.call(staged_path/"ahsh")
-    clear_xattrs.call(staged_path/"ahed")
 
     system_command "codesign", args: ["--force", "--sign", "-", staged_path/"ahweb"]
     system_command "codesign", args: ["--force", "--sign", "-", staged_path/"ahapp"]
     system_command "codesign", args: ["--force", "--sign", "-", staged_path/"ahsh"]
-    system_command "codesign", args: ["--force", "--sign", "-", staged_path/"ahed"]
     system_command "codesign", args: ["--force", "--sign", "-", "#{chromiumd_dir}/ah-chromiumd"]
     webkit_runtime_artifacts.each do |artifact|
       system_command "codesign", args: ["--force", "--deep", "--sign", "-", "#{webkitd_dir}/#{artifact}"]
     end
     Dir["#{ladybirdd_dir}/lib/*.dylib"].each do |dylib|
       system_command "codesign", args: ["--force", "--sign", "-", dylib]
-    end
-    Dir["#{editor_runtime_dir}/grammars/*.{so,dylib}"].each do |grammar|
-      system_command "codesign", args: ["--force", "--sign", "-", grammar]
     end
     ladybird_executable_artifacts.each do |artifact|
       path = "#{ladybirdd_dir}/#{artifact}"
