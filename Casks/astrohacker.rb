@@ -1,6 +1,6 @@
 cask "astrohacker" do
-  version "0.1.36"
-  sha256 "5afe746357423d352f1b4fd132fcb1abb7f4ab951c08b8a8eaa959e709e143a8"
+  version "0.1.37"
+  sha256 "0b3254209596384da86152e4161e22e96ccfac8620300e8e459365567599523f"
 
   url "https://github.com/astrohackerlabs/astrohacker-terminal/releases/download/v#{version}/astrohacker-#{version}-aarch64-apple-darwin.tar.gz",
       verified: "github.com/astrohackerlabs/astrohacker-terminal/"
