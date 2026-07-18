@@ -255,4 +255,9 @@ cask "astrohacker" do
     "~/Library/WebKit/com.termsurf.ghostboard",
     "~/Library/WebKit/com.termsurf.ghostboard.debug",
   ]
+
+  caveats <<~EOS
+    Open Astrohacker Terminal.app from Applications
+    (or Spotlight: search "Astrohacker Terminal").
+  EOS
 end
