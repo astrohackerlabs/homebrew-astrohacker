@@ -15,15 +15,18 @@ cask "astrohacker" do
   binary "Astrohacker Terminal.app/Contents/MacOS/ahterm", target: "ahterm"
   binary "ahweb"
   binary "ahsh"
+  binary "ahcalc/dist/ahcalc", target: "ahcalc"
   binary "ah-chromiumd/ah-chromiumd", target: "ah-chromiumd"
   binary "ah-webkitd/ah-webkitd", target: "ah-webkitd"
   binary "ah-ladybirdd/bin/ah-ladybirdd", target: "ah-ladybirdd"
+  artifact "ahcalc", target: "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-ahcalc"
   artifact "ah-chromiumd", target: "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-ah-chromiumd"
   artifact "ah-webkitd", target: "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-ah-webkitd"
   artifact "ah-ladybirdd", target: "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-ah-ladybirdd"
 
   postflight do
     app_path = "#{appdir}/Astrohacker Terminal.app"
+    ahcalc_dir = "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-ahcalc"
     chromiumd_dir = "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-ah-chromiumd"
     webkitd_dir = "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-ah-webkitd"
     ladybirdd_dir = "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-ah-ladybirdd"
@@ -62,14 +65,18 @@ cask "astrohacker" do
     end
 
     clear_xattrs.call(app_path)
+    clear_xattrs.call(ahcalc_dir)
     clear_xattrs.call(chromiumd_dir)
     clear_xattrs.call(webkitd_dir)
     clear_xattrs.call(ladybirdd_dir)
     clear_xattrs.call(staged_path/"ahweb")
     clear_xattrs.call(staged_path/"ahsh")
+    clear_xattrs.call(staged_path/"ahcalc")
 
     system_command "codesign", args: ["--force", "--sign", "-", staged_path/"ahweb"]
     system_command "codesign", args: ["--force", "--sign", "-", staged_path/"ahsh"]
+    system_command "codesign",
+                   args: ["--force", "--sign", "-", "#{ahcalc_dir}/dist/ahcalc"]
     system_command "codesign", args: ["--force", "--sign", "-", "#{chromiumd_dir}/ah-chromiumd"]
     webkit_runtime_artifacts.each do |artifact|
       system_command "codesign", args: ["--force", "--deep", "--sign", "-", "#{webkitd_dir}/#{artifact}"]
