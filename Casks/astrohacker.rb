@@ -11,8 +11,8 @@ cask "astrohacker" do
   depends_on arch: :arm64
   depends_on macos: :ventura
 
-  app "Astrohacker Terminal.app"
-  binary "Astrohacker Terminal.app/Contents/MacOS/ahterm", target: "ahterm"
+  app "Astrohacker TermSurf.app"
+  binary "Astrohacker TermSurf.app/Contents/MacOS/ahterm", target: "ahterm"
   binary "ahweb"
   binary "ahsh"
   binary "ahcalc/dist/ahcalc", target: "ahcalc"
@@ -25,7 +25,7 @@ cask "astrohacker" do
   artifact "ah-ladybirdd", target: "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-ah-ladybirdd"
 
   postflight do
-    app_path = "#{appdir}/Astrohacker Terminal.app"
+    app_path = "#{appdir}/Astrohacker TermSurf.app"
     ahcalc_dir = "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-ahcalc"
     chromiumd_dir = "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-ah-chromiumd"
     webkitd_dir = "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-ah-webkitd"
@@ -102,7 +102,7 @@ cask "astrohacker" do
       start_mono = Process.clock_gettime(Process::CLOCK_MONOTONIC, :millisecond)
       start_wall = (Time.now.to_f * 1000).to_i
 
-      ohai "Warming up Astrohacker Terminal #{engine}. First browser launch may be slow without this step."
+      ohai "Warming up Astrohacker TermSurf #{engine}. First browser launch may be slow without this step."
 
       File.open(warmup_log, "a") do |log|
         log.puts("AstrohackerTerminalPostflightWarmup event=start engine=#{engine} " \
@@ -177,7 +177,7 @@ cask "astrohacker" do
       end
 
       unless success
-        opoo "Astrohacker Terminal #{engine} postflight warmup failed or timed out; " \
+        opoo "Astrohacker TermSurf #{engine} postflight warmup failed or timed out; " \
              "first browser launch may be slower. See #{warmup_log}."
       end
     end
@@ -264,7 +264,7 @@ cask "astrohacker" do
   ]
 
   caveats <<~EOS
-    Open Astrohacker Terminal.app from Applications
-    (or Spotlight: search "Astrohacker Terminal").
+    Open Astrohacker TermSurf.app from Applications
+    (or Spotlight: search "Astrohacker TermSurf").
   EOS
 end
