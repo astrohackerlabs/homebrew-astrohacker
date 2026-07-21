@@ -17,36 +17,13 @@ cask "astrohacker" do
   binary "ahsh"
   binary "ahcalc/dist/ahcalc", target: "ahcalc"
   binary "ah-chromiumd/ah-chromiumd", target: "ah-chromiumd"
-  binary "ah-webkitd/ah-webkitd", target: "ah-webkitd"
   artifact "ahcalc", target: "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-ahcalc"
   artifact "ah-chromiumd", target: "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-ah-chromiumd"
-  artifact "ah-webkitd", target: "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-ah-webkitd"
 
   postflight do
     app_path = "#{appdir}/Astrohacker TermSurf.app"
     ahcalc_dir = "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-ahcalc"
     chromiumd_dir = "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-ah-chromiumd"
-    webkitd_dir = "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-ah-webkitd"
-    webkit_runtime_artifacts = [
-      "ah-webkitd",
-      "libtermsurf_webkit.dylib",
-      "WebKit.framework",
-      "WebCore.framework",
-      "JavaScriptCore.framework",
-      "WebKitLegacy.framework",
-      "WebInspectorUI.framework",
-      "WebGPU.framework",
-      "libANGLE-shared.dylib",
-      "libWebKitSwift.dylib",
-      "libwebrtc.dylib",
-      "com.apple.WebKit.GPU.xpc",
-      "com.apple.WebKit.Model.xpc",
-      "com.apple.WebKit.Networking.xpc",
-      "com.apple.WebKit.WebContent.CaptivePortal.xpc",
-      "com.apple.WebKit.WebContent.Development.xpc",
-      "com.apple.WebKit.WebContent.EnhancedSecurity.xpc",
-      "com.apple.WebKit.WebContent.xpc",
-    ]
 
     clear_xattrs = lambda do |path|
       system_command "find", args: [path.to_s, "!", "-type", "l",
@@ -56,7 +33,6 @@ cask "astrohacker" do
     clear_xattrs.call(app_path)
     clear_xattrs.call(ahcalc_dir)
     clear_xattrs.call(chromiumd_dir)
-    clear_xattrs.call(webkitd_dir)
     clear_xattrs.call(staged_path/"ahweb")
     clear_xattrs.call(staged_path/"ahsh")
     clear_xattrs.call(staged_path/"ahcalc")
@@ -66,9 +42,6 @@ cask "astrohacker" do
     system_command "codesign",
                    args: ["--force", "--sign", "-", "#{ahcalc_dir}/dist/ahcalc"]
     system_command "codesign", args: ["--force", "--sign", "-", "#{chromiumd_dir}/ah-chromiumd"]
-    webkit_runtime_artifacts.each do |artifact|
-      system_command "codesign", args: ["--force", "--deep", "--sign", "-", "#{webkitd_dir}/#{artifact}"]
-    end
     system_command "codesign",
                    args: ["--force", "--deep", "--sign", "-",
                           app_path]
@@ -172,9 +145,6 @@ cask "astrohacker" do
     else
       warmup_engine.call("chromium", "#{chromiumd_dir}/ah-chromiumd",
                          ["--browser-name=chromium"])
-      warmup_engine.call("webkit", "#{webkitd_dir}/ah-webkitd",
-                         ["--browser-name=webkit"],
-                         { "DYLD_FRAMEWORK_PATH" => webkitd_dir })
     end
   end
 
