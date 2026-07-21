@@ -18,18 +18,15 @@ cask "astrohacker" do
   binary "ahcalc/dist/ahcalc", target: "ahcalc"
   binary "ah-chromiumd/ah-chromiumd", target: "ah-chromiumd"
   binary "ah-webkitd/ah-webkitd", target: "ah-webkitd"
-  binary "ah-ladybirdd/bin/ah-ladybirdd", target: "ah-ladybirdd"
   artifact "ahcalc", target: "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-ahcalc"
   artifact "ah-chromiumd", target: "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-ah-chromiumd"
   artifact "ah-webkitd", target: "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-ah-webkitd"
-  artifact "ah-ladybirdd", target: "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-ah-ladybirdd"
 
   postflight do
     app_path = "#{appdir}/Astrohacker TermSurf.app"
     ahcalc_dir = "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-ahcalc"
     chromiumd_dir = "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-ah-chromiumd"
     webkitd_dir = "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-ah-webkitd"
-    ladybirdd_dir = "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-ah-ladybirdd"
     webkit_runtime_artifacts = [
       "ah-webkitd",
       "libtermsurf_webkit.dylib",
@@ -50,14 +47,6 @@ cask "astrohacker" do
       "com.apple.WebKit.WebContent.EnhancedSecurity.xpc",
       "com.apple.WebKit.WebContent.xpc",
     ]
-    ladybird_executable_artifacts = [
-      "bin/ah-ladybirdd",
-      "bin/ImageDecoder",
-      "bin/RequestServer",
-      "bin/WebContent",
-      "bin/WebWorker",
-      "bin/Compositor",
-    ]
 
     clear_xattrs = lambda do |path|
       system_command "find", args: [path.to_s, "!", "-type", "l",
@@ -68,7 +57,6 @@ cask "astrohacker" do
     clear_xattrs.call(ahcalc_dir)
     clear_xattrs.call(chromiumd_dir)
     clear_xattrs.call(webkitd_dir)
-    clear_xattrs.call(ladybirdd_dir)
     clear_xattrs.call(staged_path/"ahweb")
     clear_xattrs.call(staged_path/"ahsh")
     clear_xattrs.call(staged_path/"ahcalc")
@@ -80,15 +68,6 @@ cask "astrohacker" do
     system_command "codesign", args: ["--force", "--sign", "-", "#{chromiumd_dir}/ah-chromiumd"]
     webkit_runtime_artifacts.each do |artifact|
       system_command "codesign", args: ["--force", "--deep", "--sign", "-", "#{webkitd_dir}/#{artifact}"]
-    end
-    Dir["#{ladybirdd_dir}/lib/*.dylib"].each do |dylib|
-      system_command "codesign", args: ["--force", "--sign", "-", dylib]
-    end
-    ladybird_executable_artifacts.each do |artifact|
-      path = "#{ladybirdd_dir}/#{artifact}"
-      next unless File.exist?(path)
-
-      system_command "codesign", args: ["--force", "--deep", "--sign", "-", path]
     end
     system_command "codesign",
                    args: ["--force", "--deep", "--sign", "-",
@@ -196,7 +175,6 @@ cask "astrohacker" do
       warmup_engine.call("webkit", "#{webkitd_dir}/ah-webkitd",
                          ["--browser-name=webkit"],
                          { "DYLD_FRAMEWORK_PATH" => webkitd_dir })
-      warmup_engine.call("ladybird", "#{ladybirdd_dir}/bin/ah-ladybirdd")
     end
   end
 
