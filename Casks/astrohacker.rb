@@ -146,6 +146,11 @@ cask "astrohacker" do
       warmup_engine.call("chromium", "#{chromiumd_dir}/ah-chromiumd",
                          ["--browser-name=chromium"])
     end
+
+    # End of install/upgrade (after codesign + warmup). Prefer this over caveats,
+    # which Homebrew often prints mid-upgrade before the app is ready.
+    ohai "Open Astrohacker TermSurf.app from Applications " \
+         "(or Spotlight: search \"Astrohacker TermSurf\")."
   end
 
   uninstall quit: "com.astrohacker.terminal"
@@ -215,8 +220,4 @@ cask "astrohacker" do
     "~/Library/WebKit/com.termsurf.ghostboard.debug",
   ]
 
-  caveats <<~EOS
-    Open Astrohacker TermSurf.app from Applications
-    (or Spotlight: search "Astrohacker TermSurf").
-  EOS
 end
