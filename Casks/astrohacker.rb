@@ -16,13 +16,16 @@ cask "astrohacker" do
   binary "ahweb"
   binary "ahsh"
   binary "ahcalc/dist/ahcalc", target: "ahcalc"
+  binary "ahhelp/dist/ahhelp", target: "ahhelp"
   binary "ah-chromiumd/ah-chromiumd", target: "ah-chromiumd"
   artifact "ahcalc", target: "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-ahcalc"
+  artifact "ahhelp", target: "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-ahhelp"
   artifact "ah-chromiumd", target: "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-ah-chromiumd"
 
   postflight do
     app_path = "#{appdir}/Astrohacker TermSurf.app"
     ahcalc_dir = "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-ahcalc"
+    ahhelp_dir = "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-ahhelp"
     chromiumd_dir = "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-ah-chromiumd"
 
     clear_xattrs = lambda do |path|
@@ -32,15 +35,19 @@ cask "astrohacker" do
 
     clear_xattrs.call(app_path)
     clear_xattrs.call(ahcalc_dir)
+    clear_xattrs.call(ahhelp_dir)
     clear_xattrs.call(chromiumd_dir)
     clear_xattrs.call(staged_path/"ahweb")
     clear_xattrs.call(staged_path/"ahsh")
     clear_xattrs.call(staged_path/"ahcalc")
+    clear_xattrs.call(staged_path/"ahhelp")
 
     system_command "codesign", args: ["--force", "--sign", "-", staged_path/"ahweb"]
     system_command "codesign", args: ["--force", "--sign", "-", staged_path/"ahsh"]
     system_command "codesign",
                    args: ["--force", "--sign", "-", "#{ahcalc_dir}/dist/ahcalc"]
+    system_command "codesign",
+                   args: ["--force", "--sign", "-", "#{ahhelp_dir}/dist/ahhelp"]
     system_command "codesign", args: ["--force", "--sign", "-", "#{chromiumd_dir}/ah-chromiumd"]
     system_command "codesign",
                    args: ["--force", "--deep", "--sign", "-",
