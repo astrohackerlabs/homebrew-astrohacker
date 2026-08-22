@@ -20,11 +20,14 @@ cask "astrohacker" do
   binary "ahkey/dist/ahkey", target: "ahkey"
   binary "ahnexus/ahnexus", target: "ahnexus"
   binary "ah-chromiumd/ah-chromiumd", target: "ah-chromiumd"
+  binary "ahtch/bin/ahtch", target: "ahtch"
+  binary "ahtch/bin/ahtchd", target: "ahtchd"
   artifact "ahcalc", target: "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-ahcalc"
   artifact "ahhelp", target: "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-ahhelp"
   artifact "ahkey", target: "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-ahkey"
   artifact "ahnexus", target: "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-ahnexus"
   artifact "ah-chromiumd", target: "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-ah-chromiumd"
+  artifact "ahtch", target: "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-ahtch"
 
   postflight do
     app_path = "#{appdir}/Astrohacker TermSurf.app"
@@ -33,6 +36,7 @@ cask "astrohacker" do
     ahkey_dir = "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-ahkey"
     ahnexus_dir = "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-ahnexus"
     chromiumd_dir = "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-ah-chromiumd"
+    ahtch_dir = "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-ahtch"
 
     clear_xattrs = lambda do |path|
       system_command "find", args: [path.to_s, "!", "-type", "l",
@@ -45,12 +49,14 @@ cask "astrohacker" do
     clear_xattrs.call(ahkey_dir)
     clear_xattrs.call(ahnexus_dir)
     clear_xattrs.call(chromiumd_dir)
+    clear_xattrs.call(ahtch_dir)
     clear_xattrs.call(staged_path/"ahweb")
     clear_xattrs.call(staged_path/"ahsh")
     clear_xattrs.call(staged_path/"ahcalc")
     clear_xattrs.call(staged_path/"ahhelp")
     clear_xattrs.call(staged_path/"ahkey")
     clear_xattrs.call(staged_path/"ahnexus")
+    clear_xattrs.call(staged_path/"ahtch")
 
     system_command "codesign", args: ["--force", "--sign", "-", staged_path/"ahweb"]
     system_command "codesign", args: ["--force", "--sign", "-", staged_path/"ahsh"]
@@ -63,6 +69,10 @@ cask "astrohacker" do
     system_command "codesign",
                    args: ["--force", "--sign", "-", "#{ahnexus_dir}/ahnexus"]
     system_command "codesign", args: ["--force", "--sign", "-", "#{chromiumd_dir}/ah-chromiumd"]
+    system_command "codesign",
+                   args: ["--force", "--sign", "-", "#{ahtch_dir}/bin/ahtch"]
+    system_command "codesign",
+                   args: ["--force", "--sign", "-", "#{ahtch_dir}/bin/ahtchd"]
     system_command "codesign",
                    args: ["--force", "--deep", "--sign", "-",
                           app_path]
