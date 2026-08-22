@@ -21,7 +21,6 @@ cask "astrohacker" do
   binary "ahnexus/ahnexus", target: "ahnexus"
   binary "ah-chromiumd/ah-chromiumd", target: "ah-chromiumd"
   binary "ahtch/bin/ahtch", target: "ahtch"
-  binary "ahtch/bin/ahtchd", target: "ahtchd"
   artifact "ahcalc", target: "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-ahcalc"
   artifact "ahhelp", target: "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-ahhelp"
   artifact "ahkey", target: "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-ahkey"
@@ -71,8 +70,6 @@ cask "astrohacker" do
     system_command "codesign", args: ["--force", "--sign", "-", "#{chromiumd_dir}/ah-chromiumd"]
     system_command "codesign",
                    args: ["--force", "--sign", "-", "#{ahtch_dir}/bin/ahtch"]
-    system_command "codesign",
-                   args: ["--force", "--sign", "-", "#{ahtch_dir}/bin/ahtchd"]
     system_command "codesign",
                    args: ["--force", "--deep", "--sign", "-",
                           app_path]
