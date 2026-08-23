@@ -18,12 +18,14 @@ cask "astrohacker" do
   binary "ahcalc/dist/ahcalc", target: "ahcalc"
   binary "ahkey/dist/ahkey", target: "ahkey"
   binary "ahplt/dist/ahplt", target: "ahplt"
+  binary "ahebx/dist/ahebx", target: "ahebx"
   binary "ahnexus/ahnexus", target: "ahnexus"
   binary "ah-chromiumd/ah-chromiumd", target: "ah-chromiumd"
   binary "ahtch/bin/ahtch", target: "ahtch"
   artifact "ahcalc", target: "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-ahcalc"
   artifact "ahkey", target: "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-ahkey"
   artifact "ahplt", target: "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-ahplt"
+  artifact "ahebx", target: "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-ahebx"
   artifact "ahnexus", target: "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-ahnexus"
   artifact "ah-chromiumd", target: "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-ah-chromiumd"
   artifact "ahtch", target: "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-ahtch"
@@ -33,6 +35,7 @@ cask "astrohacker" do
     ahcalc_dir = "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-ahcalc"
     ahkey_dir = "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-ahkey"
     ahplt_dir = "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-ahplt"
+    ahebx_dir = "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-ahebx"
     ahnexus_dir = "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-ahnexus"
     chromiumd_dir = "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-ah-chromiumd"
     ahtch_dir = "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-ahtch"
@@ -46,6 +49,7 @@ cask "astrohacker" do
     clear_xattrs.call(ahcalc_dir)
     clear_xattrs.call(ahkey_dir)
     clear_xattrs.call(ahplt_dir)
+    clear_xattrs.call(ahebx_dir)
     clear_xattrs.call(ahnexus_dir)
     clear_xattrs.call(chromiumd_dir)
     clear_xattrs.call(ahtch_dir)
@@ -54,6 +58,7 @@ cask "astrohacker" do
     clear_xattrs.call(staged_path/"ahcalc")
     clear_xattrs.call(staged_path/"ahkey")
     clear_xattrs.call(staged_path/"ahplt")
+    clear_xattrs.call(staged_path/"ahebx")
     clear_xattrs.call(staged_path/"ahnexus")
     clear_xattrs.call(staged_path/"ahtch")
 
@@ -65,6 +70,8 @@ cask "astrohacker" do
                    args: ["--force", "--sign", "-", "#{ahkey_dir}/dist/ahkey"]
     system_command "codesign",
                    args: ["--force", "--sign", "-", "#{ahplt_dir}/dist/ahplt"]
+    system_command "codesign",
+                   args: ["--force", "--sign", "-", "#{ahebx_dir}/dist/ahebx"]
     system_command "codesign",
                    args: ["--force", "--sign", "-", "#{ahnexus_dir}/ahnexus"]
     system_command "codesign", args: ["--force", "--sign", "-", "#{chromiumd_dir}/ah-chromiumd"]
