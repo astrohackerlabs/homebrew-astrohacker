@@ -10,7 +10,6 @@ class Nutorch < Formula
   depends_on macos: :tahoe
 
   def install
-    odie "This binary requires Apple-silicon macOS Tahoe (26.x)" unless Hardware::CPU.arm? && MacOS.version.to_s.split(".").first == "26"
     bin.install "bin/nutorch"
     libexec.install "libexec/libtorch"
     (pkgshare/"legal").install Dir["share/nutorch/legal/*"]
