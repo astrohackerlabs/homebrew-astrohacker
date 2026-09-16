@@ -1,9 +1,9 @@
 class Termplot < Formula
   desc "Interactive Plotly viewer for Astrohacker TermSurf"
   homepage "https://github.com/astrohackerlabs/termplot"
-  url "https://github.com/astrohackerlabs/termplot/releases/download/v0.3.25/termplot-0.3.25-aarch64-apple-darwin.tar.gz"
-  version "0.3.25"
-  sha256 "f303f67d1559d04494d9b15a510d70081882c2654afd24befdcdb45b3ec3761e"
+  url "https://github.com/astrohackerlabs/termplot/releases/download/v0.3.26/termplot-0.3.26-aarch64-apple-darwin.tar.gz"
+  version "0.3.26"
+  sha256 "c870262c65c55b02adba7eebb46d644eff34539787f0c2f55355e86db7e00426"
   license "MIT"
 
   depends_on arch: :arm64
