@@ -1,9 +1,9 @@
 class Nutorch < Formula
   desc "Nushell-based shell with built-in GPU tensors and neural networks"
   homepage "https://github.com/astrohackerlabs/nutorch"
-  url "https://github.com/astrohackerlabs/nutorch/releases/download/v2.0.5/nutorch-2.0.5-arm64-tahoe.tar.gz"
-  version "2.0.5"
-  sha256 "576d9c10aa3b2f81f4ab1dc327024efd809a0bc7efaeaef5f749f28cbbf04928"
+  url "https://github.com/astrohackerlabs/nutorch/releases/download/v2.0.6/nutorch-2.0.6-arm64-tahoe.tar.gz"
+  version "2.0.6"
+  sha256 "65ac810354650fed5bfd92e58a9817395b644832138b8a65213511ec2d9971d3"
   license "MIT"
 
   depends_on arch: :arm64
