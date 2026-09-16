@@ -1,6 +1,6 @@
 cask "termsurf" do
-  version "0.3.27"
-  sha256 "c0eeb70553a0941c48a4a91dd2a60eafb9616528ece58ed2d7aa8bd709f8fa97"
+  version "0.3.28"
+  sha256 "afe2fd6bc8485b415c720bcc46876ece479a326472fb709caad5f3346878f50a"
 
   url "https://github.com/astrohackerlabs/termsurf/releases/download/v#{version}/astrohacker-#{version}-aarch64-apple-darwin.tar.gz",
       verified: "github.com/astrohackerlabs/termsurf/"
@@ -9,7 +9,6 @@ cask "termsurf" do
   homepage "https://termsurf.com/"
 
   depends_on arch: :arm64
-  depends_on maximum_macos: :tahoe
   depends_on formula: "astrohackerlabs/astrohacker/nutorch"
   depends_on macos: :tahoe
 
