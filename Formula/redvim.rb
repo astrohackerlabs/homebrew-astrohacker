@@ -1,9 +1,9 @@
 class Redvim < Formula
   desc "Astrohacker modal editor with built-in Nushell highlighting"
   homepage "https://github.com/astrohackerlabs/redvim"
-  url "https://github.com/astrohackerlabs/redvim/releases/download/v0.7.1/redvim-0.7.1-aarch64-apple-darwin.tar.gz"
-  version "0.7.1"
-  sha256 "6017da0c355d1c3070f8e93b9f6d19f5d5e4c77693e24e293991189e105321ef"
+  url "https://github.com/astrohackerlabs/redvim/releases/download/v0.7.2/redvim-0.7.2-aarch64-apple-darwin.tar.gz"
+  version "0.7.2"
+  sha256 "bdb180d9d2f4a17f07d041527582c1204eceab30217ae10ee1aa8ed79b4013c8"
   license all_of: ["MIT", "Apache-2.0"]
 
   depends_on arch: :arm64
@@ -19,6 +19,14 @@ class Redvim < Formula
     ENV["XDG_CONFIG_HOME"] = (testpath/"config").to_s
     ENV.delete "REDVIM_RUNTIME"
     ENV.delete "RED_RUNTIME"
+    (testpath/"config/redvim/config.toml").write "invalid = ["
+    config = testpath/"config/astrohacker/redvim/config.toml"
+    config.write "relative_line_numbers = true\n"
+    assert_match "config ok", shell_output("#{bin}/redvim --check-config")
+    config.unlink
+    config.write "invalid = ["
+    assert_match config.to_s, shell_output("#{bin}/redvim --check-config 2>&1", 1)
+    config.unlink
     output = shell_output("#{bin}/redvim --self-check")
     assert_match "language nu: bundled highlighting ok", output
     assert_match "redvim self-check ok", output
