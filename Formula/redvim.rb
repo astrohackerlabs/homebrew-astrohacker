@@ -1,10 +1,10 @@
 class Redvim < Formula
   desc "Astrohacker modal editor with built-in Nushell highlighting"
   homepage "https://github.com/astrohackerlabs/redvim"
-  url "https://github.com/astrohackerlabs/redvim/releases/download/v0.7.4/redvim-0.7.4-aarch64-apple-darwin.tar.gz"
-  version "0.7.4"
-  sha256 "151e8238b98e9aa95542d58ee20e998a372df1268974e7e6465496bc82cbd059"
-  license all_of: ["MIT", "Apache-2.0"]
+  url "https://github.com/astrohackerlabs/redvim/releases/download/v0.7.5/redvim-0.7.5-aarch64-apple-darwin.tar.gz"
+  version "0.7.5"
+  sha256 "69ec2fed5177e9907c5947dd905e1fe47d96fffe213aea14f64a11e8aaa006f3"
+  license all_of: ["MIT", "Apache-2.0", "W3C-20150513", "BSD-3-Clause"]
 
   depends_on arch: :arm64
   depends_on macos: :tahoe
@@ -29,7 +29,7 @@ class Redvim < Formula
     config.unlink
     output = shell_output("#{bin}/redvim --self-check")
     assert_match "language nu: bundled highlighting ok", output
-    %w[c cpp python html css ruby zig swift xml make sql].each do |language|
+    %w[c cpp python html css ruby zig swift xml make sql hcl objc proto dockerfile gn wgsl caddyfile applescript].each do |language|
       assert_match "language #{language}: bundled highlighting ok", output
     end
     assert_match "redvim self-check ok", output
