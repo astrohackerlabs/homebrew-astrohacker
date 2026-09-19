@@ -1,9 +1,9 @@
 class Redvim < Formula
   desc "Astrohacker modal editor with built-in Nushell highlighting"
   homepage "https://github.com/astrohackerlabs/redvim"
-  url "https://github.com/astrohackerlabs/redvim/releases/download/v0.7.0/redvim-0.7.0-aarch64-apple-darwin.tar.gz"
-  version "0.7.0"
-  sha256 "f1daea624eef0e30f7f599c1a7be8e496e8c3d4d09a9b5521dd06b38c487c76d"
+  url "https://github.com/astrohackerlabs/redvim/releases/download/v0.7.1/redvim-0.7.1-aarch64-apple-darwin.tar.gz"
+  version "0.7.1"
+  sha256 "6017da0c355d1c3070f8e93b9f6d19f5d5e4c77693e24e293991189e105321ef"
   license all_of: ["MIT", "Apache-2.0"]
 
   depends_on arch: :arm64
