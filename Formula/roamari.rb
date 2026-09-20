@@ -1,9 +1,9 @@
 class Roamari < Formula
   desc "TermSurf-protocol browser client and Chromium engine"
   homepage "https://github.com/astrohackerlabs/roamari"
-  url "https://github.com/astrohackerlabs/roamari/releases/download/v0.1.2/roamari-0.1.2-aarch64-apple-darwin.tar.gz"
-  version "0.1.2"
-  sha256 "99a83f53ebef2a162a89fbc3e0a3de335e88d8eb4be14ebff90516fad14886f2"
+  url "https://github.com/astrohackerlabs/roamari/releases/download/v0.1.3/roamari-0.1.3-aarch64-apple-darwin.tar.gz"
+  version "0.1.3"
+  sha256 "b5954f26782def3e1c6045affd43ba067cc08f4e6dd9bd9b197a910f7c761169"
   license "MIT"
 
   depends_on arch: :arm64
