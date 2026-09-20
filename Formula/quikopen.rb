@@ -1,9 +1,9 @@
 class Quikopen < Formula
   desc "SVG viewer for Astrohacker TermSurf"
   homepage "https://github.com/astrohackerlabs/quikopen"
-  url "https://github.com/astrohackerlabs/quikopen/releases/download/v0.1.0/quikopen-0.1.0-aarch64-apple-darwin.tar.gz"
-  version "0.1.0"
-  sha256 "51e8afe9984f885a14e593024177e061047d812c06df4f9bb53e4ce66bd89757"
+  url "https://github.com/astrohackerlabs/quikopen/releases/download/v0.1.1/quikopen-0.1.1-aarch64-apple-darwin.tar.gz"
+  version "0.1.1"
+  sha256 "2f1f33a6e3b24c07dc2c854a1896b0ae15e52ca863e9f54c976deed3d37e8948"
   license "MIT"
 
   depends_on arch: :arm64
