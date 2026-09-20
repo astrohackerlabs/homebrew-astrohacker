@@ -1,6 +1,6 @@
 cask "roamari" do
-  version "0.1.4"
-  sha256 "03b1fbe68d0a7c527894abd85a446ecf10f0f8e6f91ec7355448ac00fabf00ee"
+  version "0.1.5"
+  sha256 "ee9cfdcdb509cbf731f1b552d1b6e50d3337ef5eac591cf881d4788c25d9fdb9"
 
   url "https://github.com/astrohackerlabs/roamari/releases/download/v#{version}/roamari-#{version}-aarch64-apple-darwin.tar.gz"
   name "Roamari"
@@ -14,9 +14,22 @@ cask "roamari" do
   artifact "roamari-chromiumd", target: "#{HOMEBREW_PREFIX}/opt/roamari-chromiumd"
 
   postflight do
-    helper = "#{HOMEBREW_PREFIX}/opt/roamari-chromiumd/roamari-chromiumd"
+    chromiumd_dir = "#{HOMEBREW_PREFIX}/opt/roamari-chromiumd"
+    helper = "#{chromiumd_dir}/roamari-chromiumd"
+    roamari_bin = "#{HOMEBREW_PREFIX}/bin/roamari"
     warmup_log = "#{HOMEBREW_PREFIX}/var/log/astrohacker/roamari-postinstall-warmup.log"
     system_command "mkdir", args: ["-p", File.dirname(warmup_log)]
+
+    clear_xattrs = lambda do |path|
+      system_command "find", args: [path.to_s, "!", "-type", "l",
+                                    "-exec", "xattr", "-c", "{}", "+"]
+    end
+    clear_xattrs.call(chromiumd_dir)
+    clear_xattrs.call(roamari_bin)
+    clear_xattrs.call(staged_path/"roamari")
+
+    system_command "codesign", args: ["--force", "--sign", "-", roamari_bin]
+    system_command "codesign", args: ["--force", "--sign", "-", staged_path/"roamari"]
     system_command "codesign", args: ["--force", "--sign", "-", helper]
 
     if ENV["HOMEBREW_ASTROHACKER_TERMINAL_SKIP_POSTFLIGHT_WARMUP"] == "1" ||
