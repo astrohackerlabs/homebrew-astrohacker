@@ -1,6 +1,6 @@
 cask "roamari" do
-  version "0.1.6"
-  sha256 "cf97cdcc006519d1aa632cf8a0a0b4c55a07f003edd0c707bf2a6c4494b5a947"
+  version "0.1.7"
+  sha256 "b5ecf3b55328cb75492a2d880e7a4fff54a2b62066407e65b5fe8213619eca07"
 
   url "https://github.com/astrohackerlabs/roamari/releases/download/v#{version}/roamari-#{version}-aarch64-apple-darwin.tar.gz"
   name "Roamari"
