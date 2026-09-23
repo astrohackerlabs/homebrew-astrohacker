@@ -1,9 +1,9 @@
 class Quikopen < Formula
   desc "Image viewer for Astrohacker TermSurf"
   homepage "https://github.com/astrohackerlabs/quikopen"
-  url "https://github.com/astrohackerlabs/quikopen/releases/download/v0.1.4/quikopen-0.1.4-aarch64-apple-darwin.tar.gz"
-  version "0.1.4"
-  sha256 "9dd9d254a70abb7587302d22d28ad1343e8cf14306dc0679858b9c1579bc244d"
+  url "https://github.com/astrohackerlabs/quikopen/releases/download/v0.1.5/quikopen-0.1.5-aarch64-apple-darwin.tar.gz"
+  version "0.1.5"
+  sha256 "3807af6f69821fc30e6df9a470a0f7d3788c95f3a4cfdc615230b88e4acd539d"
   license "MIT"
 
   depends_on arch: :arm64
