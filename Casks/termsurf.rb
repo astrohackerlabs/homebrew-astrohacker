@@ -1,6 +1,6 @@
 cask "termsurf" do
-  version "0.3.30"
-  sha256 "09bff0e88c506d24f08f487bfe8ba6985a7429978ef5d19d35c1c3f852f3c9fe"
+  version "0.3.31"
+  sha256 "49255bb2d0e1cec9eebf35a3cb01cef4bb258e34136c900aa489893d7ed12329"
 
   url "https://github.com/astrohackerlabs/termsurf/releases/download/v#{version}/astrohacker-#{version}-aarch64-apple-darwin.tar.gz",
       verified: "github.com/astrohackerlabs/termsurf/"
@@ -14,7 +14,7 @@ cask "termsurf" do
   depends_on macos: :tahoe
 
   app "Astrohacker TermSurf.app"
-  binary "Astrohacker TermSurf.app/Contents/MacOS/ahterm", target: "ahterm"
+  binary "Astrohacker TermSurf.app/Contents/MacOS/termsurf", target: "termsurf"
   binary "ahcalc/dist/ahcalc", target: "ahcalc"
   binary "ahebx/dist/ahebx", target: "ahebx"
   binary "ahnexus/ahnexus", target: "ahnexus"
