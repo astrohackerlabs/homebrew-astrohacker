@@ -1,6 +1,6 @@
 cask "termsurf" do
-  version "0.3.29"
-  sha256 "c7a534dbcc7ac2fef1b61f89f9e80431c07cfc0d7f389c24633f4410e96d1545"
+  version "0.3.30"
+  sha256 "09bff0e88c506d24f08f487bfe8ba6985a7429978ef5d19d35c1c3f852f3c9fe"
 
   url "https://github.com/astrohackerlabs/termsurf/releases/download/v#{version}/astrohacker-#{version}-aarch64-apple-darwin.tar.gz",
       verified: "github.com/astrohackerlabs/termsurf/"
