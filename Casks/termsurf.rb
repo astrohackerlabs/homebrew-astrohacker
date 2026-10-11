@@ -1,6 +1,6 @@
 cask "termsurf" do
-  version "0.4.1"
-  sha256 "41837c83c6561b8f9e124030f1f94655677b4cf9e1a7f235fd2488cad0cebca7"
+  version "0.4.2"
+  sha256 "a8127cb6091cd7cf2d7bd677cf9cf31453d64feb2165c0cef6c26d725c6f08d8"
 
   url "https://github.com/astrohackerlabs/termsurf/releases/download/v#{version}/astrohacker-#{version}-aarch64-apple-darwin.tar.gz",
       verified: "github.com/astrohackerlabs/termsurf/"
@@ -16,16 +16,13 @@ cask "termsurf" do
   app "Astrohacker TermSurf.app"
   binary "Astrohacker TermSurf.app/Contents/MacOS/termsurf", target: "termsurf"
   binary "ahcalc/dist/ahcalc", target: "ahcalc"
-  binary "ahebx/dist/ahebx", target: "ahebx"
   binary "ahnexus/ahnexus", target: "ahnexus"
   artifact "ahcalc", target: "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-ahcalc"
-  artifact "ahebx", target: "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-ahebx"
   artifact "ahnexus", target: "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-ahnexus"
 
   postflight do
     app_path = "#{appdir}/Astrohacker TermSurf.app"
     ahcalc_dir = "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-ahcalc"
-    ahebx_dir = "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-ahebx"
     ahnexus_dir = "#{HOMEBREW_PREFIX}/opt/astrohacker-terminal-ahnexus"
 
     clear_xattrs = lambda do |path|
@@ -35,16 +32,12 @@ cask "termsurf" do
 
     clear_xattrs.call(app_path)
     clear_xattrs.call(ahcalc_dir)
-    clear_xattrs.call(ahebx_dir)
     clear_xattrs.call(ahnexus_dir)
     clear_xattrs.call(staged_path/"ahcalc")
-    clear_xattrs.call(staged_path/"ahebx")
     clear_xattrs.call(staged_path/"ahnexus")
 
     system_command "codesign",
                    args: ["--force", "--sign", "-", "#{ahcalc_dir}/dist/ahcalc"]
-    system_command "codesign",
-                   args: ["--force", "--sign", "-", "#{ahebx_dir}/dist/ahebx"]
     system_command "codesign",
                    args: ["--force", "--sign", "-", "#{ahnexus_dir}/ahnexus"]
     system_command "codesign",
