@@ -2,38 +2,29 @@ cask "termsurf" do
   version "0.4.3"
   sha256 "2314a1efd38f3826fec7ba8ae6e31d87fb5cd1c263c9ec56dd6d3c35e73734ff"
 
-  url "https://github.com/astrohackerlabs/termsurf/releases/download/v#{version}/astrohacker-#{version}-aarch64-apple-darwin.tar.gz",
-      verified: "github.com/astrohackerlabs/termsurf/"
+  url "https://github.com/astrohackerlabs/termsurf/releases/download/v#{version}/astrohacker-#{version}-aarch64-apple-darwin.tar.gz"
   name "Astrohacker TermSurf"
   desc "Terminal, shell, and web tools"
   homepage "https://termsurf.com/"
 
   depends_on arch: :arm64
-  depends_on formula: "astrohackerlabs/astrohacker/nutorch"
   depends_on cask: "astrohackerlabs/astrohacker/roamari"
+  depends_on formula: "astrohackerlabs/astrohacker/nutorch"
   depends_on macos: :tahoe
 
   app "Astrohacker TermSurf.app"
   binary "Astrohacker TermSurf.app/Contents/MacOS/termsurf", target: "termsurf"
 
-  postflight do
-    app_path = "#{appdir}/Astrohacker TermSurf.app"
-
-    clear_xattrs = lambda do |path|
-      system_command "find", args: [path.to_s, "!", "-type", "l",
-                                    "-exec", "xattr", "-c", "{}", "+"]
-    end
-
-    clear_xattrs.call(app_path)
-
-    system_command "codesign",
-                   args: ["--force", "--deep", "--sign", "-",
-                          app_path]
-
-    # End of install/upgrade (after codesign + warmup). Prefer this over caveats,
-    # which Homebrew often prints mid-upgrade before the app is ready.
-    ohai "Open Astrohacker TermSurf.app from Applications " \
-         "(or Spotlight: search \"Astrohacker TermSurf\")."
+  postflight_steps do
+    run "find",
+        args: ["{{appdir}}/Astrohacker TermSurf.app", "!", "-type", "l",
+               "-exec", "xattr", "-c", "{}", "+"]
+    run "codesign",
+        args: ["--force", "--deep", "--sign", "-",
+               "{{appdir}}/Astrohacker TermSurf.app"]
+    # The former postflight ended with an "Open Astrohacker TermSurf.app" notice.
+    # Cask steps blocks cannot emit notices (`warn` is formula-only) and caveats
+    # print mid-upgrade, so the notice is dropped.
   end
 
   uninstall quit: "com.astrohacker.terminal"
