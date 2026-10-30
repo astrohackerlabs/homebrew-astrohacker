@@ -13,110 +13,98 @@ cask "roamari" do
   binary "roamari"
   artifact "roamari-chromiumd", target: "#{HOMEBREW_PREFIX}/opt/roamari-chromiumd"
 
-  postflight do
-    chromiumd_dir = "#{HOMEBREW_PREFIX}/opt/roamari-chromiumd"
-    helper = "#{chromiumd_dir}/roamari-chromiumd"
-    roamari_bin = "#{HOMEBREW_PREFIX}/bin/roamari"
-    warmup_log = "#{HOMEBREW_PREFIX}/var/log/astrohacker/roamari-postinstall-warmup.log"
-    system_command "mkdir", args: ["-p", File.dirname(warmup_log)]
+  postflight_steps do
+    mkdir_p "{{HOMEBREW_PREFIX}}/var/log/astrohacker"
 
-    clear_xattrs = lambda do |path|
-      system_command "find", args: [path.to_s, "!", "-type", "l",
-                                    "-exec", "xattr", "-c", "{}", "+"]
-    end
-    clear_xattrs.call(chromiumd_dir)
-    clear_xattrs.call(roamari_bin)
-    clear_xattrs.call(staged_path/"roamari")
+    # Clear quarantine xattrs so the ad-hoc re-signed binaries will launch.
+    # `opt` is not sandbox-writable by default, so steps touching the Chromium
+    # helper directory declare it via `writable_paths`.
+    run "find",
+        args:           ["{{HOMEBREW_PREFIX}}/opt/roamari-chromiumd", "!", "-type", "l",
+                         "-exec", "xattr", "-c", "{}", "+"],
+        writable_paths: ["{{HOMEBREW_PREFIX}}/opt/roamari-chromiumd"]
+    run "find",
+        args: ["{{HOMEBREW_PREFIX}}/bin/roamari", "!", "-type", "l",
+               "-exec", "xattr", "-c", "{}", "+"]
+    run "find",
+        args: ["{{staged_path}}/roamari", "!", "-type", "l",
+               "-exec", "xattr", "-c", "{}", "+"]
 
-    system_command "codesign", args: ["--force", "--sign", "-", roamari_bin]
-    system_command "codesign", args: ["--force", "--sign", "-", staged_path/"roamari"]
-    system_command "codesign", args: ["--force", "--sign", "-", helper]
+    run "codesign", args: ["--force", "--sign", "-", "{{HOMEBREW_PREFIX}}/bin/roamari"]
+    run "codesign", args: ["--force", "--sign", "-", "{{staged_path}}/roamari"]
+    run "codesign",
+        args:           ["--force", "--sign", "-",
+                         "{{HOMEBREW_PREFIX}}/opt/roamari-chromiumd/roamari-chromiumd"],
+        writable_paths: ["{{HOMEBREW_PREFIX}}/opt/roamari-chromiumd"]
 
-    if ENV["HOMEBREW_ASTROHACKER_TERMINAL_SKIP_POSTFLIGHT_WARMUP"] == "1" ||
-       ENV["ASTROHACKER_TERMINAL_SKIP_POSTFLIGHT_WARMUP"] == "1" ||
-       ENV["HOMEBREW_TERMSURF_SKIP_POSTFLIGHT_WARMUP"] == "1"
-      File.open(warmup_log, "a") do |log|
-        log.puts("RoamariPostInstallWarmup event=skipped " \
-                 "wall_ms=#{(Time.now.to_f * 1000).to_i} " \
-                 "reason=skip_env")
-      end
-    else
-      timeout_seconds = 180
-      start_mono = Process.clock_gettime(Process::CLOCK_MONOTONIC, :millisecond)
-      start_wall = (Time.now.to_f * 1000).to_i
-      ohai "Warming up roamari-chromiumd. First browser launch may be slow without this step."
-      File.open(warmup_log, "a") do |log|
-        log.puts("RoamariPostInstallWarmup event=start engine=chromium " \
-                 "wall_ms=#{start_wall} binary=#{helper}")
-      end
+    # Warm up roamari-chromiumd so the first browser launch is fast. Steps blocks
+    # are declarative and evaluated when the cask is loaded, so the skip-env
+    # checks, timeout watchdog, and structured event logging from the former
+    # Ruby postflight now live in this POSIX-sh wrapper. It always exits 0:
+    # warmup problems are logged and reported on stderr, never failing install.
+    run "/bin/sh",
+        args:           [
+          "-c",
+          <<~SHELL,
+            log="$TERMSURF_ENGINE_STARTUP_TRACE_FILE"
+            helper="{{HOMEBREW_PREFIX}}/opt/roamari-chromiumd/roamari-chromiumd"
+            wall_ms() { echo $(( $(date +%s) * 1000 )); }
 
-      env = {
-        "TERMSURF_ENGINE_STARTUP_TRACE"      => "1",
-        "TERMSURF_ENGINE_STARTUP_TRACE_FILE" => warmup_log,
-      }
-      status = nil
-      timed_out = false
-      pid = nil
-      begin
-        File.open(warmup_log, "a") do |child_log|
-          child_log.sync = true
-          pid = Process.spawn(env, helper.to_s, "--browser-name=chromium", "--termsurf-warmup",
-                              out: child_log, err: child_log)
-        end
-        deadline = Time.now + timeout_seconds
-        loop do
-          waited = Process.waitpid2(pid, Process::WNOHANG)
-          if waited
-            status = waited[1]
-            break
-          end
-          if Time.now >= deadline
-            timed_out = true
-            begin
-              Process.kill("TERM", pid)
-            rescue Errno::ESRCH
-              timed_out = true
-            end
-            sleep 1
-            begin
-              Process.kill("KILL", pid)
-            rescue Errno::ESRCH
-              timed_out = true
-            end
-            begin
-              Process.wait(pid)
-            rescue Errno::ECHILD
-              timed_out = true
-            end
-            break
-          end
-          sleep 0.25
-        end
-      rescue SystemCallError => e
-        File.open(warmup_log, "a") do |log|
-          log.puts("RoamariPostInstallWarmup event=spawn_error engine=chromium " \
-                   "wall_ms=#{(Time.now.to_f * 1000).to_i} error=#{e.class} message=#{e.message.inspect}")
-        end
-      end
+            if [ "${HOMEBREW_ASTROHACKER_TERMINAL_SKIP_POSTFLIGHT_WARMUP:-}" = "1" ] ||
+               [ "${ASTROHACKER_TERMINAL_SKIP_POSTFLIGHT_WARMUP:-}" = "1" ] ||
+               [ "${HOMEBREW_TERMSURF_SKIP_POSTFLIGHT_WARMUP:-}" = "1" ]; then
+              echo "RoamariPostInstallWarmup event=skipped wall_ms=$(wall_ms) reason=skip_env" >> "$log"
+              exit 0
+            fi
 
-      duration_ms = Process.clock_gettime(Process::CLOCK_MONOTONIC, :millisecond) - start_mono
-      success = status&.success? == true && !timed_out
-      exit_status = if status
-        status.exitstatus
-      else
-        "unknown"
-      end
-      File.open(warmup_log, "a") do |log|
-        log.puts("RoamariPostInstallWarmup event=done engine=chromium " \
-                 "wall_ms=#{(Time.now.to_f * 1000).to_i} " \
-                 "duration_ms=#{duration_ms} success=#{success} " \
-                 "timed_out=#{timed_out} exit_status=#{exit_status}")
-      end
-      unless success
-        opoo "roamari-chromiumd install warmup failed or timed out; " \
-             "first browser launch may be slower. See #{warmup_log}."
-      end
-    end
+            echo "==> Warming up roamari-chromiumd. First browser launch may be slow without this step."
+            start_line="RoamariPostInstallWarmup event=start engine=chromium wall_ms=$(wall_ms)"
+            echo "$start_line binary=$helper" >> "$log"
+
+            start_s=$(date +%s)
+            "$helper" --browser-name=chromium --termsurf-warmup >> "$log" 2>&1 &
+            pid=$!
+            ( sleep 180; kill -TERM "$pid" 2>/dev/null; sleep 1; kill -KILL "$pid" 2>/dev/null ) &
+            watchdog=$!
+
+            timed_out=false
+            if wait "$pid"; then
+              status=0
+            else
+              status=$?
+              case "$status" in
+                137|143) timed_out=true ;;
+              esac
+            fi
+            kill "$watchdog" 2>/dev/null
+            wait "$watchdog" 2>/dev/null
+
+            duration_ms=$(( ($(date +%s) - start_s) * 1000 ))
+            success=false
+            if [ "$status" -eq 0 ] && [ "$timed_out" = false ]; then
+              success=true
+            fi
+
+            done_line="RoamariPostInstallWarmup event=done engine=chromium wall_ms=$(wall_ms)"
+            done_line="$done_line duration_ms=$duration_ms success=$success"
+            done_line="$done_line timed_out=$timed_out exit_status=$status"
+            echo "$done_line" >> "$log"
+
+            if [ "$success" != true ]; then
+              echo "Warning: roamari-chromiumd install warmup failed or timed out;" >&2
+              echo "first browser launch may be slower. See $log." >&2
+            fi
+            exit 0
+          SHELL
+        ],
+        env:            {
+          "TERMSURF_ENGINE_STARTUP_TRACE" => "1",
+          "TERMSURF_ENGINE_STARTUP_TRACE_FILE" =>
+            "{{HOMEBREW_PREFIX}}/var/log/astrohacker/roamari-postinstall-warmup.log",
+        },
+        must_succeed:   false,
+        print_stdout:   true,
+        writable_paths: ["{{HOMEBREW_PREFIX}}/opt/roamari-chromiumd"]
   end
 
   caveats <<~EOS
